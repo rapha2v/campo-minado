@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Alert } from "react-native";
 import MineField from "./src/components/MineField";
-import { boardMineField, openField, hadExplosion, wonGame, showMines } from "./src/util";
+import { boardMineField, openField, hadExplosion, wonGame, showMines } from "./src/funcsBoard";
 import Params from "./src/params/params";
 
 const styles = StyleSheet.create({

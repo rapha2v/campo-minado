@@ -10,13 +10,17 @@ type boardMineFieldFn = {
 
 const boardMineField = (row: number, column: number, dfLevel: number): boardMineFieldFn[][] => {
 	const board = checkMines(
+		//responsável por fazer a checagem de quantas minas tem
 		spreadMines(
-			Array(row)
-				.fill(0)
+			//responsável por fazer o espalhamento das minas
+			Array(row) //cria uma matriz do tipo boardMineFieldFn que vai servir como instrução para como os campos vão funcionar
+				.fill(0) //preenche todos campos com 0
 				.map((_, r) => {
-					return Array(column)
-						.fill(0)
+					//faz um map em cima do array
+					return Array(column) //retorna o array de colunas
+						.fill(0) // preenche todos campos com zero
 						.map((_, c) => {
+							// faz um map em cima dos campos, gerando um objeto do tipo boardMineFieldFn
 							return {
 								row: r,
 								column: c,
@@ -28,12 +32,13 @@ const boardMineField = (row: number, column: number, dfLevel: number): boardMine
 							} as boardMineFieldFn;
 						});
 				}),
+			// parâmetros para spreadMines()
 			row,
 			column,
 			dfLevel
 		)
 	);
-	return board;
+	return board; //retornando a matriz
 };
 
 const spreadMines = (
@@ -42,14 +47,16 @@ const spreadMines = (
 	column: number,
 	dfLevel: number
 ): boardMineFieldFn[][] => {
-	const numBombsMustHave: number = dfLevel;
-	let numBombsExistents: number = 0;
+	const numBombsMustHave: number = dfLevel; // passado como parâmetro, esse é o número de bombas que o campo deve ter
+	let numBombsExistents: number = 0; // número de bombas existentes, começando com zero
 	while (numBombsMustHave > numBombsExistents) {
-		const rowsOfBoard = randomNumber(0, row - 1);
-		const columnsOfBoard = randomNumber(0, column - 1);
+		// enquanto o número de bombas existentes for menor do que o número de bombas que o campo deve ter, ele continua criando
+		const rowsOfBoard = randomNumber(0, row - 1); // cria uma linha
+		const columnsOfBoard = randomNumber(0, column - 1); //cria uma coluna
 		if (!board[rowsOfBoard][columnsOfBoard].mined) {
-			board[rowsOfBoard][columnsOfBoard].mined = true;
-			numBombsExistents++;
+			//checa se a linha coluna dessa matriz está minado
+			board[rowsOfBoard][columnsOfBoard].mined = true; //mina a linha coluna da matriz
+			numBombsExistents++; //número de bombas aumenta
 		}
 	}
 
@@ -60,6 +67,7 @@ const howManyMinesNear = (
 	row: number,
 	column: number
 ): boardMineFieldFn[] => {
+	// faz uma checagem, através das combinações possíveis de um campo, e o retorna para ser feita a checagem
 	const rowOfboard: number = board.length;
 	const columnOfBoard: number = board[0].length;
 	const columnLeft: number = column - 1;
@@ -83,6 +91,7 @@ const howManyMinesNear = (
 };
 
 const checkMines = (board: boardMineFieldFn[][]): boardMineFieldFn[][] => {
+	// faz a checagem de quantas minas tem ao redor de cada campo
 	for (let [i, column] of board.entries()) {
 		for (let [x, field] of column.entries()) {
 			for (let neighbor of howManyMinesNear(board, i, x)) {
@@ -96,40 +105,45 @@ const checkMines = (board: boardMineFieldFn[][]): boardMineFieldFn[][] => {
 };
 
 const randomNumber = (min: number, max: number): number => {
-	return Math.round(Math.random() * (max - min) + min);
+	return Math.round(Math.random() * (max - min) + min); //cria um número randômico entre dois números
 };
 
 const safeNeighborhood = (board: boardMineFieldFn[][], row: number, column: number): boolean => {
 	return howManyMinesNear(board, row, column).reduce(
+		// verifica as minas ao redor
 		(result: boolean, neighbor: boardMineFieldFn) => {
-			return result && !neighbor.mined;
+			return result && !neighbor.mined; // caso não tenho nenhuma mina, retorna true
 		},
-		true
+		true //acumulador começando como true
 	);
 };
 
 const openField = (board: boardMineFieldFn[][], row: number, column: number): void => {
-	const field: boardMineFieldFn = board[row][column];
+	const field: boardMineFieldFn = board[row][column]; //cria um campo com os parâmetros passados
 	if (!field.opened) {
-		field.opened = true;
+		//verifica se o campo não está aberto
+		field.opened = true; // abre o campo
 		if (field.mined) {
-			field.exploded = true;
+			//verifica se não tem mina
+			field.exploded = true; // explode o campo
 		} else if (safeNeighborhood(board, row, column)) {
+			//caso seja uma vizinhaça segura
 			howManyMinesNear(board, row, column).forEach((n) => {
-				openField(board, n.row, n.column);
+				// verifica as minas ao redor
+				openField(board, n.row, n.column); //cria uma recursividade para sempre ir testando se a vizinha é segura para ir abrindo os campos
 			});
 		}
 	}
 };
 
 const fields = (board: boardMineFieldFn[][]): boardMineFieldFn[] =>
-	board.reduce((acc, value) => acc.concat(value), [] as boardMineFieldFn[]);
+	board.reduce((acc, value) => acc.concat(value), [] as boardMineFieldFn[]); //cria um único array dos campos existentes
 
 const hadExplosion = (board: boardMineFieldFn[][]): boolean =>
-	fields(board).filter((field) => field.exploded).length > 0;
+	fields(board).filter((field) => field.exploded).length > 0; //verifica se não tem nenhum campo explodido
 
 const pendding = (field: boardMineFieldFn): boolean => {
-	return (field.mined && !field.flagged) || (!field.mined && !field.opened); // verifica se ne
+	return (field.mined && !field.flagged) || (!field.mined && !field.opened); // verifica se os campos minados estão sem flag e se existe algum campo que não está minado não foi aberto
 };
 const wonGame = (board: boardMineFieldFn[][]): boolean => {
 	return (
@@ -145,7 +159,7 @@ const showMines = (board: boardMineFieldFn[][]): void => {
 };
 
 const flaggedField = (board: boardMineFieldFn[][], row: number, column: number): void => {
-	const field: boardMineFieldFn = board[row][column];
+	const field: boardMineFieldFn = board[row][column]; // através do parâmetro passado, ele cria um campo
 	field.flagged = !field.flagged; // inverte o valor booleano
 };
 
