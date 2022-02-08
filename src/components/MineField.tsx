@@ -15,13 +15,21 @@ type boardMineFieldFn = {
 type propsMineField = {
 	board: boardMineFieldFn[][];
 	openField: (r: number, c: number) => void;
+	flagField: (r: number, c: number) => void;
 };
 
 export default (props: propsMineField) => {
-	const { board, openField } = props;
+	const { board, openField, flagField } = props;
 	const rows = board.map((row, r) => {
 		const columns = row.map((field, c) => {
-			return <Field {...field} key={c} clickField={() => openField(r, c)} />;
+			return (
+				<Field
+					{...field}
+					key={c}
+					clickField={() => openField(r, c)}
+					longClickField={() => flagField(r, c)}
+				/>
+			);
 		});
 		return (
 			<View style={{ flexDirection: "row" }} key={r}>

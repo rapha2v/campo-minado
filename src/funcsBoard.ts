@@ -119,9 +119,9 @@ const safeNeighborhood = (board: boardMineFieldFn[][], row: number, column: numb
 };
 
 const openField = (board: boardMineFieldFn[][], row: number, column: number): void => {
-	const field: boardMineFieldFn = board[row][column]; //cria um campo com os parâmetros passados
-	if (!field.opened) {
-		//verifica se o campo não está aberto
+	const field: boardMineFieldFn = board[row][column]; //cria um campo com os parâmetros
+	//verifica se o campo não está aberto
+	if (!field.opened && !field.flagged) {
 		field.opened = true; // abre o campo
 		if (field.mined) {
 			//verifica se não tem mina
@@ -163,4 +163,4 @@ const flaggedField = (board: boardMineFieldFn[][], row: number, column: number):
 	field.flagged = !field.flagged; // inverte o valor booleano
 };
 
-export { boardMineField, openField, hadExplosion, wonGame, showMines };
+export { boardMineField, openField, hadExplosion, wonGame, showMines, flaggedField };

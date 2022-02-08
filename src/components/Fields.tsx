@@ -41,10 +41,11 @@ type propsView = {
 	exploded: boolean;
 	flagged: boolean;
 	clickField: () => void;
+	longClickField: () => void;
 };
 
 export default (props: propsView) => {
-	const { mined, opened, nearMines, exploded, flagged, clickField } = props;
+	const { mined, opened, nearMines, exploded, flagged, clickField, longClickField } = props;
 
 	const styleField: ViewStyle[] = [styles.field]; //array de estilo a ser aplicado ao campo
 	if (opened) styleField.push(styles.opened); // verifica se já foi aberto para aplicar o estilo
@@ -62,7 +63,7 @@ export default (props: propsView) => {
 	};
 	const color: string = colorTextMine(); // armazenando a cor para ser passado ao component
 	return (
-		<TouchableWithoutFeedback onPress={clickField}>
+		<TouchableWithoutFeedback onPress={clickField} onLongPress={longClickField}>
 			<View style={styleField}>
 				{/*caso o campo não esteja minado e esteja aberto, revelo a quantidade de minas ao redor, caso contrário não faz nada*/}
 				{!mined && opened && nearMines > 0 ? (
